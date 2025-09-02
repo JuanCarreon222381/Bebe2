@@ -1,0 +1,228 @@
+enum class EstadosBebes {
+    despierto,
+    dibujando,
+    riendo,
+    llorando,
+    feliz,
+    enbrazos,
+    volando,
+    jugando,
+    observando,
+    dormido,
+    comiendo,
+    cagado_y_miado,
+    viendo_paw_patrol,
+    tieso
+}
+
+interface InterfazCuidados {
+    fun cuidar(): String
+}
+
+interface InterfazEntretenimiento {
+    fun entretener(): String
+}
+
+interface InterfazCreatividad {
+    fun crear(): String
+}
+
+class CuidadoBasico : InterfazCuidados {
+    override fun cuidar(): String {
+        return "El bebe necesita pañal limpio y un abrazo"
+    }
+}
+
+class EntretenimientoJuguetes : InterfazEntretenimiento {
+    override fun entretener(): String {
+        return "El bebe juega con su sonaja favorita"
+    }
+}
+
+class CreatividadDibujo : InterfazCreatividad {
+    override fun crear(): String {
+        return "El bebe hace garabatos de colores en su cuaderno"
+    }
+}
+
+class Bebe(
+    var nombre: String,
+    var hambre: Int,
+    var pañal_lleno: Int,
+    var sueño: Int,
+    var creativo: Int = 0,
+    var felicidad: Int = 0,
+    var estado: EstadosBebes = EstadosBebes.despierto,
+    var cuidados: InterfazCuidados = CuidadoBasico(),
+    var entretenimiento: InterfazEntretenimiento = EntretenimientoJuguetes(),
+    var creatividadExtra: InterfazCreatividad = CreatividadDibujo()
+) {
+
+    private fun puedeActuar(): Boolean {
+        return estado != EstadosBebes.tieso
+    }
+
+    fun alimentar() {
+        if (puedeActuar()) estado = EstadosBebes.comiendo
+    }
+
+    fun Dibujar() {
+        if (creativo >= 10 && puedeActuar() &&
+            (estado == EstadosBebes.despierto || estado == EstadosBebes.comiendo)
+        ) {
+            estado = EstadosBebes.dibujando
+            creativo = 0
+        }
+    }
+
+    fun cargar() {
+        if (puedeActuar()) {
+            estado = EstadosBebes.enbrazos
+            felicidad += 2
+        }
+    }
+
+    fun volar() {
+        if (puedeActuar()) {
+            estado = EstadosBebes.volando
+            felicidad += 2
+        }
+    }
+
+    fun jugar() {
+        if (puedeActuar()) {
+            estado = EstadosBebes.jugando
+            felicidad += 2
+        }
+    }
+
+    fun ver() {
+        if (puedeActuar()) {
+            estado = EstadosBebes.observando
+            sueño += 5
+        }
+    }
+
+    fun Divertido() {
+        if (felicidad >= 1 && puedeActuar() &&
+            (estado == EstadosBebes.despierto || estado == EstadosBebes.comiendo)
+        ) {
+            estado = EstadosBebes.riendo
+            felicidad = 0
+        }
+    }
+
+    fun dormir() {
+        if (puedeActuar() &&
+            (estado == EstadosBebes.despierto || estado == EstadosBebes.comiendo) &&
+            sueño > 49
+        ) {
+            sueño = 0
+            estado = EstadosBebes.dormido
+        }
+    }
+
+    fun despertar() {
+        if (estado == EstadosBebes.dormido) {
+            estado = EstadosBebes.despierto
+        }
+    }
+
+    fun despertar_con_agua() {
+        if (estado == EstadosBebes.dormido) {
+            estado = EstadosBebes.tieso
+        }
+    }
+
+    fun actualizar_estado() {
+        when (estado) {
+            EstadosBebes.despierto -> {
+                sueño += 5
+                hambre += 5
+                pañal_lleno += 3
+            }
+            EstadosBebes.comiendo -> {
+                hambre -= 40
+            }
+            else -> {}
+        }
+    }
+
+    fun picar_con_un_palo(): String {
+        return estado_actual()
+    }
+
+    fun estado_actual(): String {
+        return when (estado) {
+            EstadosBebes.despierto -> "El bebe esta despierto"
+            EstadosBebes.tieso -> "Estoy muerto"
+            EstadosBebes.dormido -> "Esta dormidito"
+            EstadosBebes.comiendo -> "Estoy alimentadome para ser grande y fuerte"
+            EstadosBebes.dibujando -> "Estoy dibujando un arbol"
+            EstadosBebes.enbrazos -> "Me estan cargando"
+            EstadosBebes.volando -> "Estoy volando"
+            EstadosBebes.jugando -> "Estoy jugando con papa"
+            EstadosBebes.observando -> "Me estoy aburriendo"
+            EstadosBebes.riendo -> "Estoy muy feliz por verte"
+            else -> "No identifico el estado"
+        }
+    }
+
+    fun mostrarCuidados() = cuidados.cuidar()
+    fun mostrarEntretenimiento() = entretenimiento.entretener()
+    fun mostrarCreatividad() = creatividadExtra.crear()
+}
+
+fun main() {
+    val JackieShieras = Bebe("Jackie Shieras", 50, 10, 70)
+    val Lucas = Bebe("Lucas", 60, 5, 40)
+
+    JackieShieras.actualizar_estado()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.dormir()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.despertar_con_agua()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.alimentar()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.creativo = 12
+    JackieShieras.Dibujar()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.cargar()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.volar()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.jugar()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.ver()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    JackieShieras.felicidad = 3
+    JackieShieras.Divertido()
+    println("Jackie: ${JackieShieras.estado_actual()}")
+
+    println("Jackie Cuidados: ${JackieShieras.mostrarCuidados()}")
+    println("Jackie Entretenimiento: ${JackieShieras.mostrarEntretenimiento()}")
+    println("Jackie Creatividad: ${JackieShieras.mostrarCreatividad()}")
+
+    Lucas.jugar()
+    println("Lucas: ${Lucas.estado_actual()}")
+
+    Lucas.alimentar()
+    println("Lucas: ${Lucas.estado_actual()}")
+
+    Lucas.Dibujar()
+    println("Lucas: ${Lucas.estado_actual()}")
+
+    println("Lucas Cuidados: ${Lucas.mostrarCuidados()}")
+    println("Lucas Entretenimiento: ${Lucas.mostrarEntretenimiento()}")
+    println("Lucas Creatividad: ${Lucas.mostrarCreatividad()}")
+}
